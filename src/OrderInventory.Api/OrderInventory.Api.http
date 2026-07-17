@@ -1,0 +1,32 @@
+@OrderInventory.Api_HostAddress = http://localhost:5021
+
+### Create order
+POST {{OrderInventory.Api_HostAddress}}/orders
+Content-Type: application/json
+
+{
+  "userId": "11111111-1111-1111-1111-111111111111",
+  "items": [
+    { "sku": "A1", "qty": 2 }
+  ]
+}
+
+###
+@orderId = {{create.response.body.$.id}}
+
+### Pay order (idempotent on paymentExternalId)
+POST {{OrderInventory.Api_HostAddress}}/orders/{{orderId}}/pay
+Content-Type: application/json
+
+{
+  "paymentExternalId": "XYZ-123"
+}
+
+### Cancel order (PLACED only)
+POST {{OrderInventory.Api_HostAddress}}/orders/{{orderId}}/cancel
+
+###
+GET {{OrderInventory.Api_HostAddress}}/inventory/A1
+Accept: application/json
+
+###
